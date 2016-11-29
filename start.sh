@@ -7,6 +7,6 @@ if ! type 'bundle' > /dev/null; then
     gem install bundler
 fi
 bundle install
-bundle exec ruby application.rb &
+bundle exec nohup ruby application.rb & > /dev/null
 echo $1 > bot.pid
 tail -f this_month.log
