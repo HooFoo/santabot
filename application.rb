@@ -3,9 +3,13 @@ require 'require_all'
 require 'yaml'
 require 'hashie'
 require 'logger'
+require 'facebook/messenger'
+require 'redis'
+require 'savon'
 
 
 require_all 'config'
+require_all 'model'
 require_all 'TGBot'
 require_all 'FBBot'
 require_all 'utils'

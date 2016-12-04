@@ -25,7 +25,7 @@ class TGBot
 
   private
 
-  def process msg
+  def process(msg)
     LOG.debug msg.to_yaml
     case msg
       when Telegram::Bot::Types::InlineQuery
@@ -37,7 +37,7 @@ class TGBot
     end
   end
 
-  def process_inline query
+  def process_inline(query)
 =begin
     location = query.location
     if location.nil?
@@ -63,54 +63,54 @@ class TGBot
 =end
   end
 
-  def process_message message
-    if ['/start', 'Я хочу еще с тобой поговорить!'].include? message.text
-        @bot.api.send_message chat_id: message.chat.id,
-                              text: random_hello(message.from.first_name)
-    elsif message.text =~ /Да, я хочу [\w\d\s]+ !/i
-      name = message.text.match(/Да, я хочу ([\w\d\s]+) !/i)[1]
-      send_link message.chat.id, message.from.first_name, name,ShopApi.item_link(name)
-    elsif ['Нет'].include? message.text
-      process_question message.chat.id
-    else
-      process_question message.chat.id
+  def process_message(message)
+    begin
+      chat_id = message.chat.id
+      history = Dialog.new(message.chat.id,RedisStorage.get_user_session(chat_id))
+
+      if ['/start', 'Я хочу еще с тобой поговорить!'].include? message.text || history.state == 'finished'
+        history.clear
+        send_reply chat_id, ReplicaService.get_replica_for_state(history.state, message.from.first_name)
+        history.state = Dialog::STATES[1]
+        send_reply chat_id, ReplicaService.get_replica_for_state(history.state, nil)
+      elsif history.state != 'finished'
+        history.add_answer history.state, message.text
+        history.next_state
+        if history.state != 'finished'
+          send_reply chat_id, ReplicaService.get_replica_for_state(history.state, history.answers[:who])
+        else
+          more = Telegram::Bot::Types::KeyboardButton.new text: "Я хочу еще с тобой поговорить!"
+          markup = Telegram::Bot::Types::ReplyKeyboardMarkup.new keyboard:[[more]],
+                                                                 one_time_keyboard: true,
+                                                                 resize_keyboard: true
+          link = QueryService.generate_link(history.answers[:who],history.answers[:hobby],history.answers[:tool])
+          text = "#{ReplicaService.get_replica_for_state(history.state, history.answers[:who])} #{link}"
+          send_reply chat_id, text, markup
+        end
+      end
+      RedisStorage.update_user_session chat_id, history
+    rescue Exception => ex
+      LOG.error "Telegram bot  error: #{ex.message}"
+      send_reply message.chat.id, 'Упс, у меня что-то сломалось. Попробуйте написать что-то другое.'
     end
   end
 
-  def process_cb msg
+  def process_cb (msg)
 
   end
 
-  def process_question id
-    repl = random_reply
-    yes = Telegram::Bot::Types::KeyboardButton.new text: "Да, я хочу #{repl[:name]} !"
-    no = Telegram::Bot::Types::KeyboardButton.new text: "Нет"
-    markup = Telegram::Bot::Types::ReplyKeyboardMarkup.new keyboard:[[yes,no]]
-    @bot.api.send_message chat_id: id,
-                          reply_markup: markup,
-                          text: repl[:text]
+  def send_reply(chat_id, text, keyboard=nil)
+    @bot.api.send_message chat_id: chat_id,
+                          reply_markup: keyboard,
+                          text: text
   end
 
 
   def send_link id,uname,name,link
-    more = Telegram::Bot::Types::KeyboardButton.new text: "Я хочу еще с тобой поговорить!"
-    markup = Telegram::Bot::Types::ReplyKeyboardMarkup.new keyboard:[[more]]
     @bot.api.send_message chat_id: id,
                           reply_markup: markup,
                           text: "Замечательно, #{uname}! Вот здесь ты свожешь получить свой #{name}: [#{link}]",
                           parse_mode: 'Markdown'
   end
 
-  def random_reply
-    name = ShopApi.get_random_item_name
-    text = ["Пока летел олени растрясли повозку и я потерял твой подарок... Возможно вместо того, что ты просишь тебе подойдет #{name}?",
-    "К сожалению эльфы затянули по срокам и то что ты ищешь я найти не могу... Возможно вместо того, что ты просишь тебе подойдет #{name}?"].sample
-    {name: name,
-    text: text}
-  end
-
-  def random_hello name
-    ["Хо хо хо! Привет, #{name} меня зовут Дед Мороз бот, меня создали для примера и дальнейшего расширения функционала. Задай любой вопрос и я сгенерирую случайный товар!",
-     "Привет, #{name}! Я как раз ждал тебя! Меня зовут Дед Мороз бот, и я уверен что ты пришел ко мне за своим подарком. Напиши мне, что же ты хочешь получить! Скорей!"].sample
-  end
 end
