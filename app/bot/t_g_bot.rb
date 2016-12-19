@@ -3,7 +3,7 @@ class TGBot
   Token = Config::Telegram.env.token
 
   def initialize
-    LOG.info 'Bot started'
+    Rails.logger.info 'Bot started'
     @client = Telegram::Bot::Client
   end
 
@@ -17,7 +17,7 @@ class TGBot
           end
         end
       rescue Exception => e
-        LOG.error e
+        Rails.logger.error e
         sleep 5000
       end
     end
@@ -26,7 +26,7 @@ class TGBot
   private
 
   def process(msg)
-    LOG.debug msg.to_yaml
+    Rails.logger.debug msg.to_yaml
     case msg
       when Telegram::Bot::Types::InlineQuery
         process_inline msg
@@ -135,7 +135,7 @@ class TGBot
     rescue ApiException => ex
       send_reply message.chat.id, ex.message
     rescue => ex
-      LOG.error "Telegram bot  error: #{ex.message}"
+      Rails.logger.error "Telegram bot  error: #{ex.message}"
       send_reply message.chat.id, 'Упс, у меня что-то сломалось. Попробуйте написать что-то другое.'
     end
   end
