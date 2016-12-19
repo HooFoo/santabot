@@ -6,6 +6,7 @@ require 'logger'
 require 'facebook/messenger'
 require 'redis'
 require 'savon'
+require 'httparty'
 
 
 require_all 'config'

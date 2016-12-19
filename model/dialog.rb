@@ -1,6 +1,6 @@
 class Dialog
 
-  STATES = %w(hello who hobby tool finished)
+  STATES = %w(hello rating discount groupchat letter letter_two chat chat_two chat_three unknown)
 
   attr_reader :id
   attr_accessor :state
