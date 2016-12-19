@@ -1,6 +1,6 @@
 class TGBot
 
-  Token = Config::Telegram.env.token
+  Token = ENV['TG_TOKEN']
 
   def initialize
     Rails.logger.info 'Bot started'
@@ -8,18 +8,16 @@ class TGBot
   end
 
   def start
-    loop do
-      begin
-        @client.run(Token) do |bot|
-          @bot = bot
-          bot.listen do |message|
-            process message
-          end
+    begin
+      @client.run(Token) do |bot|
+        @bot = bot
+        bot.listen do |message|
+          process message
         end
-      rescue Exception => e
-        Rails.logger.error e
-        sleep 5000
       end
+    rescue Exception => e
+      Rails.logger.error e
+      sleep 5000
     end
   end
 

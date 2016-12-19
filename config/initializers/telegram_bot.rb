@@ -1,6 +1,5 @@
 require 'telegram/bot'
 require 'require_all'
-require 'facebook/messenger'
 
 unless Rails.env.production?
   bot_files = Dir[Rails.root.join('app', 'bot', '**', '*.rb')]
