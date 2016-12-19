@@ -1,5 +1,5 @@
 class RedisStorage
-  @@redis = Redis.new
+  @@redis = Redis.new ENV['REDISCLOUD_URL']
 
   def self.get_user_session(id)
     json = @@redis.get(id)
