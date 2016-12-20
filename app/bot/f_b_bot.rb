@@ -42,14 +42,14 @@ class FBBot
       chat_id = postback.sender[:id]
       history = Dialog.new(chat_id,RedisStorage.get_user_session(chat_id))
       history.state = postback.payload
-      self.reply postback,
+      self.reply Message.new(recipient: { id: chat_id}),
                  ReplicaService.get_replica_for_state(history.state,'dummy')
       RedisStorage.update_user_session chat_id, history
     rescue ApiException => ex
-      self.reply postback, ex.message
+      self.reply Message.new(recipient: { id: chat_id}), ex.message
     rescue => ex
       Rails.logger.error "Facebook bot  error: #{ex.message}"
-      self.reply postback, 'Упс, у меня что-то сломалось. Попробуйте написать что-то другое.'
+      self.reply Message.new(recipient: { id: chat_id}), 'Упс, у меня что-то сломалось. Попробуйте написать что-то другое.'
     end
   end
 
