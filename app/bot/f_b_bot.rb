@@ -21,10 +21,10 @@ class FBBot
         else
           history.state = 'unknown'
           self.reply message,
-                     ReplicaService.get_replica_for_state(history.state, message.text),
+                     nil,
                      self.initial_keyboard
           self.reply message,
-                     ReplicaService.get_replica_for_state(history.state, message.text),
+                     nil,
                      self.initial_keyboard_part_two
 
       end
