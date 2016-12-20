@@ -23,6 +23,9 @@ class FBBot
           self.reply message,
                      ReplicaService.get_replica_for_state(history.state, message.text),
                      self.initial_keyboard
+          self.reply message,
+                     ReplicaService.get_replica_for_state(history.state, message.text),
+                     self.initial_keyboard_part_two
 
       end
       RedisStorage.update_user_session chat_id, history
@@ -63,11 +66,23 @@ class FBBot
         type: 'template',
         payload: {
             template_type: 'button',
-            text: 'Привет, я - Санта бот. Я помогу тебе выбрать подарок.\n',
+            text: 'Привет, я - Санта бот. Я помогу тебе выбрать подарок.\n Ты можешь выбрать что-то отсюда',
             buttons: [
-                { type: 'postback', title: 'Чат с сантой  💬', payload: 'chat' },
                 { type: 'postback', title: 'Рейтинг подарков 🔄', payload: 'rating' },
                 { type: 'postback', title: 'Скидка от Санты  💰', payload: 'discount' },
+            ]
+        }
+    }
+  end
+
+  def self.initial_keyboard_part_two
+    {
+        type: 'template',
+        payload: {
+            template_type: 'button',
+            text: 'Или мы можем обсудить твой подарок',
+            buttons: [
+                { type: 'postback', title: 'Чат с сантой  💬', payload: 'chat' },
                 { type: 'postback', title: 'Письмо пожелание ✉', payload: 'letter' },
                 { type: 'postback', title: 'Групповой чат 👨‍👩‍👧‍👧', payload: 'groupchat' },
             ]
