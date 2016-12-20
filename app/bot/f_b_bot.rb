@@ -49,6 +49,7 @@ class FBBot
       self.reply postback, ex.message
     rescue => ex
       Rails.logger.error "Facebook bot  error: #{ex.message}"
+      Rails.logger.error ex.backtrace
       self.reply postback, 'Упс, у меня что-то сломалось. Попробуйте написать что-то другое.'
     end
   end
