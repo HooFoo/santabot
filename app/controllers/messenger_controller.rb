@@ -1,4 +1,5 @@
 class MessengerController
+
   def webhook
     Rails.logger.debug params.inspect
     # #logic here

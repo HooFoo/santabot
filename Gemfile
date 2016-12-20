@@ -34,7 +34,7 @@ gem 'jbuilder', '~> 2.5'
 # gem 'capistrano-rails', group: :development
 
 gem 'telegram-bot-ruby'
-gem 'messenger-ruby'
+gem 'facebook-messenger'
 gem 'redis', '~>3.2'
 gem 'savon'
 gem 'httparty'
