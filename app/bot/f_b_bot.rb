@@ -9,15 +9,15 @@ class FBBot
         when 'chat'
           history.state = 'chat_two'
           self.reply message,
-                     ReplicaService.get_replica_for_state(history.state, message.text)
+                     ReplicaService.get_replica_for_state(history.state, message.text, sc: 'fb')
         when 'chat_two'
           history.state = 'chat_three'
           self.reply message,
-                     ReplicaService.get_replica_for_state(history.state, message.text)
+                     ReplicaService.get_replica_for_state(history.state, message.text, sc: 'fb')
         when 'letter'
           history.state = 'letter_two'
           self.reply message,
-                     ReplicaService.get_replica_for_state(history.state, message.text)
+                     ReplicaService.get_replica_for_state(history.state, message.text, sc: 'fb')
         else
           history.state = 'unknown'
           self.reply message,
@@ -43,7 +43,7 @@ class FBBot
       history = Dialog.new(chat_id,RedisStorage.get_user_session(chat_id))
       history.state = postback.payload
       self.reply postback,
-                 ReplicaService.get_replica_for_state(history.state,'dummy')
+                 ReplicaService.get_replica_for_state(history.state,'dummy', sc: 'fb')
       RedisStorage.update_user_session chat_id, history
     rescue ApiException => ex
       self.reply postback, ex.message
