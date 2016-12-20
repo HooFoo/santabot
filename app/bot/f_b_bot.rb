@@ -48,7 +48,7 @@ class FBBot
     rescue ApiException => ex
       self.reply message, ex.message
     rescue => ex
-      Rails.logger.error "Facebook bot  error: #{ex.message}"
+      Rails.logger.error "Facebook bot  error: #{ex.inspect}"
       self.reply message, 'Упс, у меня что-то сломалось. Попробуйте написать что-то другое.'
     end
   end
