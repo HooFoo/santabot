@@ -55,7 +55,7 @@ class FBBot
   end
 
   def self.reply message, text=nil , keyboard = nil
-    if text.nil?
+    if !text.nil?
       message.reply(text: text)
     else
       message.reply(attachment: keyboard)
