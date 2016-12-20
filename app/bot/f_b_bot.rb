@@ -39,7 +39,7 @@ class FBBot
 
   Bot.on :postback do |postback|
     begin
-      chat_id = message.sender[:id]
+      chat_id = postback.sender[:id]
       history = Dialog.new(chat_id,RedisStorage.get_user_session(chat_id))
       history.state = postback.payload
       self.reply postback,
