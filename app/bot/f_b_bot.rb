@@ -45,8 +45,12 @@ class FBBot
     end
   end
 
-  def self.reply message, text, keyboard = nil
-    message.reply(text: text, attachment: keyboard)
+  def self.reply message, text=nil , keyboard = nil
+    if text.nil?
+      message.reply(text: text)
+    else
+      message.reply(attachment: keyboard)
+    end
   end
 
   def self.initial_keyboard
