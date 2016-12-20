@@ -3,8 +3,8 @@ class FBBot
 
   Bot.on :message do |message|
     begin
-      chat_id = message.sender.id
-      history = Dialog.new(message.chat.id,RedisStorage.get_user_session(chat_id))
+      chat_id = message.sender[:id]
+      history = Dialog.new(chat_id,RedisStorage.get_user_session(chat_id))
       case history.state
         when 'chat'
           history.state = 'chat_two'
