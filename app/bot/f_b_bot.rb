@@ -21,7 +21,7 @@ class FBBot
         else
           history.state = 'unknown'
           self.reply message,
-                     ReplicaService.get_replica_for_state(history.state, message.from.first_name),
+                     ReplicaService.get_replica_for_state(history.state, message.text),
                      self.initial_keyboard
 
       end
