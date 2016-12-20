@@ -35,13 +35,18 @@ class FBBot
   end
 
   Bot.on :postback do |postback|
-    postback.sender    # => { 'id' => '1008372609250235' }
-    postback.recipient # => { 'id' => '2015573629214912' }
-    postback.sent_at   # => 2016-04-22 21:30:36 +0200
-    postback.payload   # => 'EXTERMINATE'
-
-    if postback.payload == 'EXTERMINATE'
-      puts "Human #{postback.recipient} marked for extermination"
+    begin
+      chat_id = message.sender[:id]
+      history = Dialog.new(chat_id,RedisStorage.get_user_session(chat_id))
+      history.state = postback.payload
+      self.reply postback,
+                 ReplicaService.get_replica_for_state(history.state, message.from.first_name)
+      RedisStorage.update_user_session chat_id, history
+    rescue ApiException => ex
+      self.reply message, ex.message
+    rescue => ex
+      Rails.logger.error "Facebook bot  error: #{ex.message}"
+      self.reply message, 'Упс, у меня что-то сломалось. Попробуйте написать что-то другое.'
     end
   end
 
@@ -58,10 +63,13 @@ class FBBot
         type: 'template',
         payload: {
             template_type: 'button',
-            text: 'Привет, я - Санта бот. Я помогу тебе выбрать подарок.',
+            text: 'Привет, я - Санта бот. Я помогу тебе выбрать подарок.\n',
             buttons: [
-                { type: 'postback', title: 'Yes', payload: 'HARMLESS' },
-                { type: 'postback', title: 'No', payload: 'EXTERMINATE' }
+                { type: 'postback', title: 'Чат с сантой  💬', payload: 'chat' },
+                { type: 'postback', title: 'Рейтинг подарков 🔄', payload: 'rating' },
+                { type: 'postback', title: 'Скидка от Санты  💰', payload: 'discount' },
+                { type: 'postback', title: 'Письмо пожелание ✉', payload: 'letter' },
+                { type: 'postback', title: 'Групповой чат 👨‍👩‍👧‍👧', payload: 'groupchat' },
             ]
         }
     }
