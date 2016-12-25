@@ -4,17 +4,17 @@ class TGBot
 
   def initialize
     Rails.logger.info 'Bot started'
-    @client = Telegram::Bot::Client
+    @client = Telegram::Bot::Client.new(Token)
   end
 
-  def start
+  def update(data)
     begin
-      @client.run(Token) do |bot|
-        @bot = bot
-        bot.listen do |message|
-          process message
-        end
-      end
+      update = Telegram::Bot::Types::Update.new(data)
+
+      message = update.message
+
+      process message
+
     rescue Exception => e
       Rails.logger.error e
       sleep 5000
@@ -33,32 +33,6 @@ class TGBot
       when Telegram::Bot::Types::CallbackQuery
         process_cb msg
     end
-  end
-
-  def process_inline(query)
-=begin
-    location = query.location
-    if location.nil?
-      url_button = Telegram::Bot::Types::InlineKeyboardButton.new text: 'Попробовать онлайн',
-                                                                  url: 'http://rasp.orgp.spb.ru/'
-      message = Telegram::Bot::Types::InputTextMessageContent.new message_text: 'Пожалуйста, разрешите доступ к вашему местоположению',
-                                                                  parse_mode: 'Markdown'
-      keyboard = Telegram::Bot::Types::InlineKeyboardMarkup.new inline_keyboard: [[url_button]]
-      result = Telegram::Bot::Types::InlineQueryResultArticle.new id: rand,
-                                                                  title: 'Разрешите местоположение',
-                                                                  reply_markup: keyboard,
-                                                                  input_message_content: message
-    else
-      text = RaspApi.get_stops(location)
-      message = Telegram::Bot::Types::InputTextMessageContent.new message_text: text
-      result = Telegram::Bot::Types::InlineQueryResultArticle.new id: rand,
-                                                                  url: text,
-                                                                  title: 'Ближайшие остановки',
-                                                                  input_message_content: message
-    end
-    @bot.api.answer_inline_query inline_query_id: query.id,
-                                 results: [result]
-=end
   end
 
   def process_message(message)
@@ -143,14 +117,14 @@ class TGBot
   end
 
   def send_reply(chat_id, text, keyboard=nil)
-    @bot.api.send_message chat_id: chat_id,
+    @client.api.send_message chat_id: chat_id,
                           reply_markup: keyboard,
                           text: text
   end
 
 
   def send_link id,uname,name,link
-    @bot.api.send_message chat_id: id,
+    @client.api.send_message chat_id: id,
                           reply_markup: markup,
                           text: "Замечательно, #{uname}! Вот здесь ты свожешь получить свой #{name}: [#{link}]",
                           parse_mode: 'Markdown'

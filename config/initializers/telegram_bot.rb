@@ -14,7 +14,3 @@ unless Rails.env.production?
   bot_files.each { |file| require_dependency file }
 end
 
-Thread.new {
-  tbot = TGBot.new
-  tbot.start
-}
