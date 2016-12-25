@@ -4,10 +4,8 @@
 ```
 gem install bundle 
 bundle install
-bundle exec ruby application.rb
+rails s 
 ```
-Great thanks to all gems contributors
+## No configuration for production. 
+### Not enough time and money
 
-# SORRY, I have only one day to remade it to use webhooks
-## Telegram bot using longpolling
- I dont have time and don't want to improve this. 
