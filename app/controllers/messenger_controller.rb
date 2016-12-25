@@ -1,4 +1,4 @@
-class MessengerController
+class MessengerController < ApplicationController
 
   @@bot = TGBot.new
 
